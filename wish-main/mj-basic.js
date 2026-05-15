@@ -41,7 +41,7 @@ buttons.forEach(button => {
 
         if (value === 'Enter') {
             if (passwordInput.value === correctPassword) {
-                window.location.href = "../wish-page/wish-page.html";
+                window.location.href = "Happy-Birthday-Mei/wish-page/wish-page.html";
             } else {
                 errorModal.classList.add('active'); // Show "Try Again" blur box
             }
