@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="wish-main/m-background.css">
+    <link rel="stylesheet" href="wish-main/m-banner.css">
+    <link rel="stylesheet" href="wish-main/m-balloons.css">
+    <link rel="stylesheet" href="wish-main/m-pw-box.css">
+    <link rel="stylesheet" href="wish-main/m-modal.css">
+</head>
+
+<body>
+    <div class="first-interface">
+        <p>Tap anywhere to continue</p>
+    </div>
+    <div class="main">
+        <audio id="bgTheme" loop>
+            <source src="wish-main/main-theme.mp3" type="audio/mpeg">
+        </audio>
+        <div class="background">
+            <div class="bubble b1"></div>
+            <div class="bubble b2"></div>
+            <div class="bubble b3"></div>
+            <div class="bubble b4"></div>
+            <div class="bubble b5"></div>
+            <div class="bubble b6"></div>
+            <div class="bubble b7"></div>
+            <div class="bubble b8"></div>
+            <div class="bubble b9"></div>
+            <div class="bubble b10"></div>
+            <div class="heart h1"></div>
+            <div class="heart h2"></div>
+            <div class="heart h3"></div>
+            <div class="heart h4"></div>
+            <div class="heart h5"></div>
+            <div class="heart h6"></div>
+            <div class="heart h7"></div>
+            <div class="heart h8"></div>
+            <div class="heart h9"></div>
+            <div class="heart h10"></div>
+        </div>
+
+        <div class="banner banner-left">
+            <div class="flag red"></div>
+            <div class="flag pink"></div>
+            <div class="flag red"></div>
+            <div class="flag pink"></div>
+            <div class="flag red"></div>
+            <div class="flag pink"></div>
+            <div class="flag red"></div>
+            <div class="flag pink"></div>
+        </div>
+
+        <div class="banner banner-right">
+            <div class="flag red"></div>
+            <div class="flag pink"></div>
+            <div class="flag red"></div>
+            <div class="flag pink"></div>
+            <div class="flag red"></div>
+            <div class="flag pink"></div>
+            <div class="flag red"></div>
+            <div class="flag pink"></div>
+        </div>
+        <div class="balloons-container">
+            <div class="balloon bl1">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl2">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl3">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl4">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl5">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl6">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl7">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl8">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl9">
+                <div class="string"></div>
+            </div>
+            <div class="balloon bl10">
+                <div class="string"></div>
+            </div>
+        </div>
+        <div class="pw-container">
+            <h1>HAPPY BIRTHDAY!!</h1>
+            <label for="birthday">TYPE YOUR BIRTHDAY</label>
+            <input type="password" placeholder="DD/MM/YYYY" id="birthday" readonly required>
+            <div class="button-container">
+                <button class="numbers">1</button>
+                <button class="numbers">2</button>
+                <button class="numbers">3</button>
+                <button class="numbers">4</button>
+                <button class="numbers">5</button>
+                <button class="numbers">6</button>
+                <button class="numbers">7</button>
+                <button class="numbers">8</button>
+                <button class="numbers">9</button>
+                <button class="numbers">Delete</button>
+                <button class="numbers">0</button>
+                <button class="numbers" type="submit">Enter</button>
+            </div>
+        </div>
+        <!-- Place this inside your .main div -->
+        <div id="error-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>INCORRECT CODE</h2>
+                <p>Would you like to try again?</p>
+                <div class="modal-buttons">
+                    <button id="modal-ok" class="numbers">OK</button>
+                    <button id="modal-no" class="numbers">NO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="wish-main/mj-basic.js"></script>
+</body>
+
+</html>

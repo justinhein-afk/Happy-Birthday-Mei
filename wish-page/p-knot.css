@@ -1,0 +1,75 @@
+.knot-container {
+    position: absolute;
+    width: 150px;
+    height: auto;
+    transform-origin: top center;
+    animation: knotSway 4s infinite ease-in-out;
+    z-index: 100;
+}
+
+.knot1 { top: 20%; left: 10%; }
+.knot2 { top: 30%; left: 20%; }
+.knot3 { top: 25%; right: 10%; }
+
+.chinese-knot {
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+/* Design styles moved from HTML attributes */
+.knot-thread {
+    fill: none;
+    stroke: gold;
+    stroke-width: 4;
+}
+
+.knot-grid path, 
+.knot-grid circle {
+    fill: none;
+    stroke: gold;
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.knot-bead, 
+.knot-tassel {
+    fill: gold;
+    stroke: none;
+    cursor: pointer;
+}
+
+.knot-tassel:hover {
+    filter: drop-shadow(0 0 10px orange);
+}
+
+@keyframes knotSway {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+}
+
+@media (max-width:1000px) {
+    .knot-container {
+        scale: 0.8;
+    }
+    .knot1 { top: 18%; left: 8%; }
+    .knot2 { top: 27%; left: 17%; }
+    .knot3 { top: 22%; right: 7%; }
+}
+
+@media (max-width: 750px) {
+    .knot-container {
+        scale: 0.7;
+    }
+    .knot1 { top: 15%; left: 5%; }
+    .knot2 { top: 23%; left: 13%; }
+    .knot3 { top: 19%; right: 4%; }
+}
+
+@media (max-width: 500px) {
+    .knot-container {
+        scale: 0.6;
+    }
+    .knot1 { top: 13%; left: -2%; }
+    .knot2 { top: 20%; left: 10%; }
+    .knot3 { top: 15%; right: -2%; }
+}

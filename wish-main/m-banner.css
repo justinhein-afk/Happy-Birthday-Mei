@@ -1,0 +1,92 @@
+.banner {
+    position: absolute;
+    top: 0;
+    display: flex;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.banner-left {
+    top: 12%;
+    left: -5px;
+    transform: rotate(-20deg);
+}
+
+.banner-right {
+    top: 12%;
+    right: -5px;
+    transform: rotate(20deg);
+}
+
+.flag {
+    width: 60px;
+    height: 80px;
+    position: relative;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    animation: banner-sway 5s infinite ease-in-out;
+    transform-origin: top center;
+    transform: rotate(-5deg);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 80%, 0% 100%);
+}
+
+.red { background: linear-gradient(135deg, #ff4d4d, #b30000); }
+.pink { background: linear-gradient(135deg, #ffc9c9, #e47b7b); animation-delay: 1s; }
+
+@keyframes banner-sway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+@media (max-width: 1000px) {
+    .banner-left { 
+        top: 12%;
+        left: -10px;
+        transform: rotate(-25deg);
+    }
+    .banner-right {
+        top: 12%;
+        right: -10px;
+        transform: rotate(25deg);
+    }
+    .flag {
+        width: 48px;
+        height: 64px;
+    }
+}
+
+@media (max-width: 750px) {
+    .banner-left { 
+        top: 12%;
+        left: -15px;
+        transform: rotate(-30deg);
+    }
+    .banner-right {
+        top: 12%;
+        right: -15px;
+        transform: rotate(30deg);
+    }
+    .flag {
+        width: 36px;
+        height: 48px;
+    }
+}
+
+@media (max-width: 500px) {
+    .banner-left { 
+        top: 9%;
+        left: -20px;
+        transform: rotate(-40deg);
+        gap: 5px;
+    }
+    .banner-right {
+        top: 9%;
+        right: -20px;
+        transform: rotate(40deg);
+        gap: 5px;
+    }
+    .flag {
+        width: 24px;
+        height: 32px;
+    }
+}
+

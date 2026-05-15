@@ -1,0 +1,66 @@
+.envelope {
+    position: absolute;
+    bottom: 5%;
+    left: 10%;
+    width: 90px;
+    height: 160px;
+    background: url(envalope.png);
+    background-size: cover;
+    border: 2px solid #d69d2c;
+    border-radius: 15px;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+    animation: shake 3s ease-in infinite;
+    cursor: pointer;
+}
+
+.noti {
+    position: absolute;
+    top: -10%;
+    right: -15%;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ebbb5b;
+    z-index: 10;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #950000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes shake {
+    0% { transform: rotate(0deg);}
+    3% { transform: rotate(5deg);}
+    9% { transform: rotate(-5deg);}
+    12%,30% { transform: rotate(0deg);}
+    33% { transform: rotate(5deg);}
+    39% { transform: rotate(-5deg);}
+    42%,100% { transform: rotate(0deg);}
+}
+
+@media (max-width:1000px) {
+    .envelope {
+        left: 8%;
+        bottom: 4%;
+        scale: 0.8;
+    }
+}
+
+@media (max-width: 750px) {
+    .envelope {
+        left: 7%;
+        bottom: 3.5%;
+        scale: 0.7;
+    }
+}
+
+@media (max-width: 500px) {
+    .envelope {
+        left: 6%;
+        bottom: 3%;
+        scale: 0.6;
+    }
+}

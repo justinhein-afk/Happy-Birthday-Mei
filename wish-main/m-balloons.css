@@ -1,0 +1,139 @@
+.balloons-container {
+    position: absolute;
+    height: 100vh;
+    width: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.balloon {
+    position: absolute;
+    width: 100px;
+    height: 130px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: balloonFloat 6s infinite ease-in-out;
+    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.1), 5px 10px 15px rgba(0,0,0,0.1);
+}
+
+.balloon .string {
+    position: absolute;
+    width: 2px;
+    height: 100px;
+    bottom: -100px;
+    left: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform-origin: top;
+    animation: sway 4s ease-in-out infinite;
+}
+
+.bl1 {
+    right: 5%;
+    top: 35%;
+    background-image: radial-gradient(circle at 30% 30%, #ff9c9c, #ff5555 50%, #ff0000);
+    animation-delay: 0s;
+}
+
+.bl2 {
+    right: 8%;
+    top: 60%;
+    background-image: radial-gradient(circle at 30% 30%, #ffe3e3, #de9898 50%, #d26464);
+    animation-delay: 1s;
+}
+
+.bl3 {
+    right: 20%;
+    top: 20%;
+    background-image: radial-gradient(circle at 30% 30%, #ffe3e3, #de9898 50%, #d26464);
+    animation-delay: 1.5s;
+}
+
+.bl4 {
+    right: 28%;
+    top: 40%;
+    background-image: radial-gradient(circle at 30% 30%, #ff9c9c, #ff5555 50%, #ff0000);
+    animation-delay: 0.5s;
+}
+
+.bl5 {
+    right: 18%;
+    top: 70%;
+    background-image: radial-gradient(circle at 30% 30%, #ffe0e0, #ffb0b0 50%, #ff6868);
+    animation-delay: 2s;
+}
+
+.bl6 {
+    left: 8%;
+    top: 30%;
+    background-image: radial-gradient(circle at 30% 30%, #ffe0e0, #ffb0b0 50%, #ff6868);
+    animation-delay: 2s;
+}
+
+.bl7 {
+    left: 5%;
+    top: 65%;
+    background-image: radial-gradient(circle at 30% 30%, #ff9c9c, #ff5555 50%, #ff0000);
+    animation-delay: 1s;
+}
+
+.bl8 {
+    left: 18%;
+    top: 40%;
+    background-image: radial-gradient(circle at 30% 30%, #ff9c9c, #ff5555 50%, #ff0000);
+    animation-delay: 0.5s;
+}
+
+.bl9 {
+    left: 28%;
+    top: 20%;
+    background-image: radial-gradient(circle at 30% 30%, #ffe0e0, #ffb0b0 50%, #ff6868);
+    animation-delay: 0s;
+}
+
+.bl10 {
+    left: 25%;
+    top: 70%;
+    background-image: radial-gradient(circle at 30% 30%, #ffe3e3, #de9898 50%, #d26464);
+    animation-delay: 1s;
+}
+
+@keyframes balloonFloat {
+    0%, 100% {transform: translateY(0px) rotate(0deg);}
+    33% {transform: translateY(-20px) rotate(2deg);}
+    66% {transform: translateY(15px) rotate(-2deg);}
+}
+
+@keyframes sway {
+    0%, 100% {transform: rotate(7deg);}
+    50% {transform: rotate(-7deg);}
+}
+
+@media (max-width:1000px) {
+    .balloon {
+        scale: 0.8;
+    }
+    .balloon .string {
+        scale: 0.8;
+        transform-origin: top;
+    }
+}
+
+@media (max-width: 750px) {
+    .balloon {
+        scale: 0.6;
+    }
+    .balloon .string {
+        scale: 0.6;
+        transform-origin: top;
+    }
+}
+
+@media (max-width: 750px) {
+    .balloon {
+        scale: 0.5;
+    }
+    .balloon .string {
+        scale: 0.5;
+        transform-origin: top;
+    }
+}
