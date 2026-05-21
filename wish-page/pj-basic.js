@@ -1,6 +1,6 @@
 // Glitter Generation
 const glitterContainer = document.querySelector('.glitters');
-for (let i = 0; i < 60; i++) {
+for (let i = 0; i < 45; i++) {
     const star = document.createElement('div');
     star.className = 'star';
     const size = Math.random() * 18 + 5 + 'px';

@@ -1,0 +1,94 @@
+.marquee-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.marquee-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.marquee-container {
+    width: 95%;
+    height: 90vh;
+    margin: auto;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    border-radius: 100px;
+    border: 10px solid #311313;
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow: hidden;
+}
+
+.marquee-row {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.marquee-track {
+    display: flex;
+    width: max-content; /* Allows track to be as wide as images */
+    gap: 20px;
+}
+
+.marquee-track img {
+    width: auto;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Movement Logic */  
+.track-left {
+    animation: scrollLeft 30s linear infinite;
+}
+
+.track-right {
+    animation: scrollRight 50s linear infinite;
+}
+
+@keyframes scrollLeft {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); } 
+}
+
+@keyframes scrollRight {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+}
+
+.close-marquee-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 3rem;
+    color: white;
+    cursor: pointer;
+    z-index: 1100;
+    line-height: 1;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.close-marquee-btn:hover {
+    color: #ff4d4d; /* Changes to a soft red on hover */
+    transform: scale(1.2);
+}

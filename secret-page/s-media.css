@@ -1,0 +1,21 @@
+/* Add this at the very bottom of s-main.css */
+@media (max-width: 900px) {
+    /* Hide the original text */
+    .first-interface p {
+        font-size: 0; 
+    }
+
+    /* Inject the mobile-restricted warning message */
+    .first-interface p::after {
+        content: "Sorry this page can't open in mobile";
+        font-size: 1.8rem;
+        text-align: center;
+        display: block;
+        padding: 0 20px;
+    }
+
+    /* Disable the pointer cursor since interaction is disabled */
+    .first-interface {
+        cursor: not-allowed;
+    }
+}

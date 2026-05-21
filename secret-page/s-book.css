@@ -1,0 +1,347 @@
+.book-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.book-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.book {
+    width: 350px;
+    height: 500px;
+    position: relative;
+    margin: 0 auto;
+    transition: all 0.5s ease;
+}
+
+.paper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    perspective: 1500px;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.front, .back {
+    background-color: #deccbe;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+
+    transform-origin: left;
+    transition: all 0.5s;
+}
+
+.front {
+    z-index: 1;
+    backface-visibility: hidden;
+    border-left: 3px solid black;
+}
+
+.back {
+    z-index: 0;
+}
+
+.front-content,
+.back-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.back-content {
+    transform: rotateY(180deg);
+}
+
+/*----Paper flipped------*/
+
+.flipped .front,
+.flipped .back {
+    transform: rotateY(-180deg);
+}
+
+/*----Buttons------*/
+
+.arrows {
+    width: 150px;
+    cursor: pointer;
+    margin: auto;
+    transition: all 0.5s ease;
+}
+
+.arrows:hover {
+    filter: drop-shadow(0 0 10px rgb(255, 204, 115));
+}
+
+.arrows img {
+    width: 100%;
+}
+
+/*----Page Orders------*/
+
+#p1 {
+    z-index: 3;
+}
+
+#p2 {
+    z-index: 2;
+}
+
+#p3 {
+    z-index: 1;
+}
+
+.front-cover .front-content img {
+    width: 350px;
+    height: 500px;
+    object-fit: cover;
+    overflow: hidden;
+    scale: 1.07;
+}
+
+.back-cover .back-content img {
+    width: 350px;
+    height: 500px;
+    object-fit: cover;
+    transform: scale(1.005);
+    overflow: hidden;
+}
+
+.close-book-btn {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    font-size: 5rem;
+    color: white;
+    cursor: pointer;
+    z-index: 1100;
+    line-height: 1;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.close-book-btn:hover {
+    color: #ff4d4d; /* Changes to a soft red on hover */
+    transform: scale(1.2);
+}
+
+/* book pages */
+
+.text-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;  
+    justify-content: center;
+
+    width: 85%;
+    height: 90%;
+    border-radius: 20px;
+}
+
+
+.paper h1 {
+    font-size: 1.5rem;
+}
+
+.paper h3 {
+    font-size: 1rem;
+}
+
+.paper p {
+    font-size: 0.75rem;
+    text-align: justify;
+    text-indent: 30px;
+    padding: 0 20px;
+}
+
+.info-orchid {
+    position: absolute;
+    top: 30px;
+    right: 35px;
+    
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background: url(info-purple.png);
+    background-size: cover;
+}
+
+.info-peony {
+    position: absolute;
+    top: 30px;
+    left: 35px;
+    
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background: url(info-pink.png);
+    background-size: cover;
+}
+
+.orchid {
+    background: #fad8ff;
+}
+
+#b1 .orchid1 {
+    position: absolute;
+    top: 0px;
+    left: 5px;
+
+    width: 100px;
+    height: 100px;
+    background: url(orchid1.webp);
+    background-size: cover;
+}
+
+#b1 .orchid2 {
+    position: absolute;
+    bottom: 26px;
+    right: 27px;
+
+    width: 70px;
+    height: 140px;
+    background: url(orchid2.png);
+    background-size: cover;
+}
+
+#b1 .orchid3 {
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+
+    width: 80px;
+    height: 80px;
+    background: url(orchid3.png);
+    background-size: cover;
+}
+
+#b1 p {
+    text-align: center;
+    font-size: 1rem;
+    line-height: 20px;
+}
+
+#f2 .orchid-top {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 200px;
+    height: 50px;
+    background: url(orchid-top.png);
+    background-size: cover;
+}
+
+#f2 .orchid-bottom {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 200px;
+    height: 50px;
+    background: url(orchid-bottom.png);
+    background-size: cover;
+}
+
+.peony {
+    background: #ffd8d8;
+}
+
+#b2 .peony1 {
+    position: absolute;
+    bottom: -10px;
+    left: -2px;
+
+    width: 90px;
+    height: 140px;
+    background: url(peony1.png);
+    background-size: cover;
+}
+
+#b2 .peony2 {
+    position: absolute;
+    top: -10px;
+    right: 5px;
+
+    width: 120px;
+    height: 120px;
+    background: url(peony2.png);
+    background-size: cover;
+}
+
+#b2 .peony3 {
+    position: absolute;
+    bottom: -15px;
+    right: 25px;
+
+    width: 120px;
+    height: 120px;
+    background: url(peony3.png);
+    background-size: cover;
+}
+
+.mixed {
+    background: #ffd8eb;
+}
+
+#f3 .peony-top {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 150px;
+    height: 65px;
+    background: url(peony-top.webp);
+    background-size: cover;
+}
+
+#f3 .orchid-left {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+
+    width: 70px;
+    height: 70px;
+    background: url(orchid-left.png);
+    background-size: cover;
+}
+
+#f3 .orchid-right {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+
+    width: 80px;
+    height: 80px;
+    background: url(orchid-right.png);
+    background-size: cover;
+}
