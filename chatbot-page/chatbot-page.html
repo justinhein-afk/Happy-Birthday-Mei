@@ -11,8 +11,9 @@
 <body>
 
     <audio id="secretTheme">
-            <source src="Chatbot-secret-theme.mp3" type="audio/mpeg">
+        <source src="Chatbot-secret-theme.mp3" type="audio/mpeg">
     </audio>
+
     <div class="chat-container">
         <div class="chat-header">
             <div class="header-info">
@@ -58,9 +59,15 @@
         </div>
     </div>
 
+    <!-- dayjs (local file — no CDN dependency) -->
     <script src="node_modules/dayjs/dayjs.min.js"></script>
+
+    <!-- chatbot logic (no Firebase) -->
     <script src="chatbot-structure.js"></script>
-    <script src="chatbot-page.js"></script>
+
+    <!-- chatbot UI + Firebase sync (must be type="module" for Firebase imports) -->
+    <script type="module" src="chatbot-page.js"></script>
+
 </body>
 
 </html>

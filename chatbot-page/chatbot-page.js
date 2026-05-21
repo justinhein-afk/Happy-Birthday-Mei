@@ -1,111 +1,165 @@
-const chatBoxMain = document.getElementById('chat-box-main');
-const chatBoxHistory = document.getElementById('chat-box-history');
-const userInput = document.getElementById('user-input');
-const sendBtn = document.getElementById('send-btn');
-const deleteBtn = document.querySelector('.delete-button');
-const hiddenHistory = document.querySelector('.history-overlay');
+// ─── FIREBASE CONFIG ──────────────────────────────────────────────────────────
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// --- Persistence Logic ---
-
-window.onload = () => {
-    const history = JSON.parse(localStorage.getItem('chat_history')) || [];
-    const isDeleted = localStorage.getItem('main_chat_hidden') === 'true';
-
-    // 1. Reconstruct the history in both containers
-    history.forEach(msg => {
-        // Always render to history overlay
-        renderToContainer(chatBoxHistory, msg.text, msg.type, msg.time, msg.dateHeader);
-        
-        // Only render to main if the user hasn't clicked "delete"
-        if (!isDeleted) {
-            renderToContainer(chatBoxMain, msg.text, msg.type, msg.time, msg.dateHeader);
-        }
-    });
-
-    // 2. Always show the greeting on refresh
-    // We set shouldSave to false so the greeting doesn't duplicate in the history logs
-    addMessage("Hello! I'm the Justin Chatbot. I'm here to help you with anything you need to know about Justin's. What can I help you find today?", "bot-msg", false);
+const firebaseConfig = {
+    apiKey:            "AIzaSyDz7HpGiDlJwi3EJ55NVF5npbN2GnR-TXE",
+    authDomain:        "justin-chatbot-220505.firebaseapp.com",
+    projectId:         "justin-chatbot-220505",
+    storageBucket:     "justin-chatbot-220505.firebasestorage.app",
+    messagingSenderId: "350198259820",
+    appId:             "1:350198259820:web:6596474e8ff7d9124ef849",
+    measurementId:     "G-FW0R3LYQ57"
 };
 
-function saveToStorage(text, type, time, dateHeader) {
-    const history = JSON.parse(localStorage.getItem('chat_history')) || [];
-    history.push({ text, type, time, dateHeader });
-    localStorage.setItem('chat_history', JSON.stringify(history));
-    // When a new message is sent, ensure the main chat is "visible" again
-    localStorage.setItem('main_chat_hidden', 'false');
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// All messages live under this Firestore collection
+const COLLECTION = "chat_messages";
+
+// ─── DOM REFS ─────────────────────────────────────────────────────────────────
+const chatBoxMain    = document.getElementById('chat-box-main');
+const chatBoxHistory = document.getElementById('chat-box-history');
+const userInput      = document.getElementById('user-input');
+const sendBtn        = document.getElementById('send-btn');
+const deleteBtn      = document.querySelector('.delete-button');
+const hiddenHistory  = document.querySelector('.history-overlay');
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+// Track whether the user has soft-deleted the main view this session
+let mainIsHidden = sessionStorage.getItem('main_chat_hidden') === 'true';
+
+// ─── FIRESTORE HELPERS ────────────────────────────────────────────────────────
+
+async function saveToFirestore(text, type, time, dateHeader) {
+    try {
+        await addDoc(collection(db, COLLECTION), {
+            text,
+            type,
+            time,
+            dateHeader: dateHeader || null,
+            createdAt: serverTimestamp()   // used for ordering
+        });
+    } catch (err) {
+        console.error("Failed to save message:", err);
+    }
 }
 
-// --- Messaging & UI Logic ---
+async function wipeFirestore() {
+    try {
+        const snapshot = await getDocs(collection(db, COLLECTION));
+        const deletes  = snapshot.docs.map(d => deleteDoc(doc(db, COLLECTION, d.id)));
+        await Promise.all(deletes);
+    } catch (err) {
+        console.error("Failed to wipe messages:", err);
+    }
+}
+
+// ─── REAL-TIME LISTENER ───────────────────────────────────────────────────────
+// onSnapshot fires immediately with existing data AND again whenever any device
+// adds/removes a message — this is what gives you cross-device sync.
+
+function startRealtimeSync() {
+    const q = query(collection(db, COLLECTION), orderBy("createdAt", "asc"));
+
+    onSnapshot(q, (snapshot) => {
+        // Clear both containers and re-render fresh from Firestore
+        chatBoxMain.innerHTML    = '';
+        chatBoxHistory.innerHTML = '';
+
+        snapshot.forEach(docSnap => {
+            const msg = docSnap.data();
+            renderToContainer(chatBoxHistory, msg.text, msg.type, msg.time, msg.dateHeader);
+            if (!mainIsHidden) {
+                renderToContainer(chatBoxMain, msg.text, msg.type, msg.time, msg.dateHeader);
+            }
+        });
+
+        // Always show the greeting on top (never saved to Firestore)
+        // It sits above the synced history visually but isn't stored
+        prependGreeting();
+    });
+}
+
+function prependGreeting() {
+    const now     = dayjs();
+    const timeStr = now.format('h:mm A');
+    const greeting = document.createElement('div');
+    greeting.className = 'message bot-msg greeting-msg';
+    greeting.innerHTML = `
+        <div class="text-content">Hello! I'm the Justin Chatbot. I'm here to help you with anything you need to know about Justin's. What can I help you find today?</div>
+        <div style="font-size:10px;opacity:0.7;margin-top:4px;text-align:right;">${timeStr}</div>
+    `;
+    chatBoxMain.prepend(greeting);
+}
+
+// ─── MESSAGING & UI ───────────────────────────────────────────────────────────
 
 function addMessage(text, type, shouldSave = true) {
-    const now = dayjs();
+    const now     = dayjs();
     const timeStr = now.format('h:mm A');
     const dateStr = now.format('dddd, MMMM D, YYYY');
-    
-    let dateHeader = null;
-    const lastDivider = chatBoxHistory.querySelectorAll('.date-divider');
-    const lastDivText = lastDivider.length > 0 ? lastDivider[lastDivider.length - 1].innerText : "";
 
-    if (lastDivText.trim() !== dateStr) {
-        dateHeader = dateStr;
-    }
+    // Check last date divider in history box to decide if we need a new header
+    const dividers  = chatBoxHistory.querySelectorAll('.date-divider');
+    const lastText  = dividers.length > 0 ? dividers[dividers.length - 1].innerText : "";
+    const dateHeader = lastText.trim() !== dateStr ? dateStr : null;
 
-    // Render to both
+    // Render immediately to both UIs (optimistic update — feels instant)
     renderToContainer(chatBoxMain, text, type, timeStr, dateHeader);
     renderToContainer(chatBoxHistory, text, type, timeStr, dateHeader);
-    
+
     if (shouldSave) {
-        saveToStorage(text, type, timeStr, dateHeader);
+        // Save to Firestore → onSnapshot on other devices will pick this up
+        saveToFirestore(text, type, timeStr, dateHeader);
+        // If user sends a new message, unhide the main view
+        mainIsHidden = false;
+        sessionStorage.removeItem('main_chat_hidden');
     }
 }
 
 function renderToContainer(container, text, type, time, dateHeader) {
     if (dateHeader && dateHeader.trim() !== "") {
-        const divider = document.createElement('div');
-        divider.className = 'date-divider';
-        divider.innerText = dateHeader;
+        const divider       = document.createElement('div');
+        divider.className   = 'date-divider';
+        divider.innerText   = dateHeader;
         container.appendChild(divider);
     }
 
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `message ${type}`;
-    msgDiv.innerHTML = `
+    const msgDiv       = document.createElement('div');
+    msgDiv.className   = `message ${type}`;
+    msgDiv.innerHTML   = `
         <div class="text-content">${text}</div>
-        <div style="font-size: 10px; opacity: 0.7; margin-top: 4px; text-align: right;">${time}</div>
+        <div style="font-size:10px;opacity:0.7;margin-top:4px;text-align:right;">${time}</div>
     `;
-    
     container.appendChild(msgDiv);
     container.scrollTop = container.scrollHeight;
 }
 
-// --- Events ---
+// ─── EVENTS ───────────────────────────────────────────────────────────────────
 
-// Delete Button: Hide from Main, Keep in History
+// Delete Button — soft hide main view only (history overlay still shows everything)
 deleteBtn.addEventListener('click', () => {
-    // 1. Clear the main UI
-    chatBoxMain.innerHTML = ''; 
-    
-    // 2. Set the persistence flag
-    localStorage.setItem('main_chat_hidden', 'true');
-    
-    // 3. Add the confirmation message
-    // Note: We set shouldSave to false so this specific notification 
-    // doesn't clutter your actual saved history in the overlay.
+    chatBoxMain.innerHTML = '';
+    mainIsHidden = true;
+    sessionStorage.setItem('main_chat_hidden', 'true');
     addMessage("Chat history deleted. Ready for your next question!", "bot-msg", false);
 });
 
-// Ctrl + Alt + R: Total Wipe
-document.addEventListener('keydown', (e) => {
+// Ctrl + Alt + R — FULL wipe from Firestore (all devices lose history)
+document.addEventListener('keydown', async (e) => {
     if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r') {
         e.preventDefault();
-        localStorage.removeItem('chat_history');
-        localStorage.removeItem('main_chat_hidden');
-        chatBoxMain.innerHTML = '';
+        chatBoxMain.innerHTML    = '';
         chatBoxHistory.innerHTML = '';
+        mainIsHidden = false;
+        sessionStorage.removeItem('main_chat_hidden');
+        await wipeFirestore();  // deletes from cloud → onSnapshot clears other devices too
     }
 });
 
-// Send Logic
+// Send
 sendBtn.addEventListener('click', () => {
     const text = userInput.value.trim();
     if (text) {
@@ -128,8 +182,9 @@ document.addEventListener('keydown', (e) => {
 });
 
 hiddenHistory.addEventListener('click', (e) => {
-    // Only close if clicking the background overlay, not the chat inside it
-    if (e.target === hiddenHistory) {
-        hiddenHistory.style.display = "none";
-    }
+    if (e.target === hiddenHistory) hiddenHistory.style.display = "none";
 });
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+// Start listening to Firestore — this loads history AND keeps all devices in sync
+startRealtimeSync();
