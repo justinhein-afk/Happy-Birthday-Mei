@@ -97,7 +97,7 @@ const justinResponses = {
 
     "code 1235": "Code 1235 basically means nothing. I made that up to let you know what I was hiding in the gift box. There is 1 flower (also one letter but that didn't count), 3 prints and 5 chocolates but what is 2?? Go find it before it was too late!!",
 
-    "truth": "The harsh truth is that, I had built this project to win you back but I have no strength to stay with you, I'm sorry! I realized about LOVE is that it doesn't matter how we feel and it only matters by the actions or how they act during relationship. No matter how attractive a baddie is, at the end of day it was just better to be with a goodie. I believe you will also be a Goodie with someone else so... တာ့တာ<3",
+    "truth real true": "The harsh truth is that, I had built this project to win you back but I have no strength to stay with you, I'm sorry! I realized about LOVE is that it doesn't matter how we feel and it only matters by the actions or how they act during relationship. No matter how attractive a baddie is, at the end of day it was just better to be with a goodie. I believe you will also be a Goodie with someone else so... တာ့တာ<3",
 };
 
 // ─── 3. FUZZY MATCHING ENGINE (from SuperSimpleDev library) ───────────────────
