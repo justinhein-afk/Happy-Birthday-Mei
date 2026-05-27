@@ -67,7 +67,7 @@ const justinResponses = {
 
     "no nope": "tf you meant NO?? I'm not AI and I don't know our previous conversation. Sorry!! What can I help you?",
 
-    "')": "You still doing that emoji? It's been a while since I've only used it with you '). Nevermind, how can I help you?",
+    "')": "Yeah, that is your signature emoji and I learnt it from you '). I haven't used it in a while since we are no longer talking so.. ')",
 
     "ok okay kk": "Ok...",
 
@@ -81,7 +81,7 @@ const justinResponses = {
 
     // Secrets and Easter Eggs
 
-    "secret hiding help me with": "Justin's secret is that he was the bat man all along. If you want to really know, just ask me to guide you.",
+    "secret hiding help me with": "Justin's secret is that he is into older woman but still choose you. If you really want to know, just ask me to guide you.",
 
     "guide tutorial": `Here is a list of what I can do for you.<br>
     <ul>
@@ -97,9 +97,7 @@ const justinResponses = {
 
     "code 1235": "Code 1235 basically means nothing. I made that up to let you know what I was hiding in the gift box. There is 1 flower (also one letter but that didn't count), 3 prints and 5 chocolates but what is 2?? Go find it before it was too late!!",
 
-    "goat": `A goat is either a horned, cud-chewing farm animal or a popular acronym used in sports and pop culture to mean the "Greatest Of All Time". But it you want to know about what I meant, just send me "goat"`,
-
-    "truth": "The harsh truth is that, I have built this project to win you back but I have no strength to stay with you, I'm sorry! I realized about LOVE is that it doesn't matter how we feel and it only matters by the actions or how they act during relationship. No matter how attractive a baddie is, at the end of day it was just better to be with a goodie. I believe you will also be a Goodie with someone else so... တာ့တာ<3",
+    "truth": "The harsh truth is that, I had built this project to win you back but I have no strength to stay with you, I'm sorry! I realized about LOVE is that it doesn't matter how we feel and it only matters by the actions or how they act during relationship. No matter how attractive a baddie is, at the end of day it was just better to be with a goodie. I believe you will also be a Goodie with someone else so... တာ့တာ<3",
 };
 
 // ─── 3. FUZZY MATCHING ENGINE (from SuperSimpleDev library) ───────────────────
