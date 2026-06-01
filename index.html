@@ -16,20 +16,34 @@
             var BIN_ID = '6a1d1b0321f9ee59d2a39953';
             var API_KEY = '$2a$10$.78Z7/7uPsVyfuU6iz7VGO.3zx5EjcH36.8HMD5fYsSoz608H2upa';
             var ua = navigator.userAgent;
-            var device = /Mobi|Android/i.test(ua) ? 'Mobile' : /iPad|Tablet/i.test(ua) ? 'Tablet' : 'Desktop';
+
+            function getDevice(ua) {
+                var mobile = ua.match(/\(([^)]+)\)/);
+                if (mobile && mobile[1]) {
+                    var info = mobile[1].replace(/;/g, ',');
+                    return info.substring(0, 80);
+                }
+                return 'Desktop';
+            }
+
+            var device = getDevice(ua);
             var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
             var time = new Date().toISOString();
 
-            fetch('https://api.jsonbin.io/v3/b/' + BIN_ID, {
-                headers: { 'X-Master-Key': API_KEY }
+            fetch('https://api.jsonbin.io/v3/b/' + BIN_ID + '/latest', {
+                headers: { 'X-Master-Key': API_KEY, 'X-Bin-Meta': 'false' }
             })
-                .then(r => r.json())
-                .then(data => {
-                    var visits = (data.record && data.record.visits) ? data.record.visits : [];
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var visits = (data && Array.isArray(data.visits)) ? data.visits : [];
                     visits.push({ device: device, time: time, timezone: tz });
                     return fetch('https://api.jsonbin.io/v3/b/' + BIN_ID, {
                         method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': API_KEY,
+                            'X-Bin-Versioning': 'false'
+                        },
                         body: JSON.stringify({ visits: visits })
                     });
                 })
