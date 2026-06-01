@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="wish-main/m-balloons.css">
     <link rel="stylesheet" href="wish-main/m-pw-box.css">
     <link rel="stylesheet" href="wish-main/m-modal.css">
+    
     <script>
         (function () {
             var BIN_ID = '6a1d1b0321f9ee59d2a39953';
@@ -28,7 +29,15 @@
 
             var device = getDevice(ua);
             var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            var time = new Date().toISOString();
+            var time = new Date().toLocaleString('en-GB', {
+                timeZone: 'Asia/Rangoon',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
 
             fetch('https://api.jsonbin.io/v3/b/' + BIN_ID + '/latest', {
                 headers: { 'X-Master-Key': API_KEY, 'X-Bin-Meta': 'false' }
