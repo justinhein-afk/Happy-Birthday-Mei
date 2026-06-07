@@ -15,7 +15,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// All messages live under this Firestore collection
 const COLLECTION = "chat_messages";
 
 // ─── DOM REFS ─────────────────────────────────────────────────────────────────
@@ -27,9 +26,24 @@ const deleteBtn      = document.querySelector('.delete-button');
 const hiddenHistory  = document.querySelector('.history-overlay');
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-// localStorage keeps the hidden flag alive across refreshes.
-// Only Ctrl+Alt+R (full wipe) or sending a new message clears it.
-let mainIsHidden = localStorage.getItem('main_chat_hidden') === 'true';
+// When the user clicks Delete, we stamp the current time into localStorage.
+// Any message created BEFORE that timestamp is permanently hidden from the main
+// view — even after refresh, even after more chatting.
+// The history overlay (Ctrl+M) always shows everything regardless of the cutoff.
+// Only Ctrl+Alt+R wipes Firestore and resets the cutoff.
+
+function getDeleteCutoff() {
+    const v = localStorage.getItem('main_delete_cutoff');
+    return v ? Number(v) : 0;
+}
+
+function setDeleteCutoff(ts) {
+    localStorage.setItem('main_delete_cutoff', String(ts));
+}
+
+function clearDeleteCutoff() {
+    localStorage.removeItem('main_delete_cutoff');
+}
 
 // ─── FIRESTORE HELPERS ────────────────────────────────────────────────────────
 
@@ -40,7 +54,24 @@ async function saveToFirestore(text, type, time, dateHeader) {
             type,
             time,
             dateHeader: dateHeader || null,
-            createdAt: serverTimestamp()   // used for ordering
+            createdAt: serverTimestamp()
+        });
+    } catch (err) {
+        console.error("Failed to save message:", err);
+    }
+}
+
+// saveWithClientTimestamp: saves the message and also stores the client-side ms
+// timestamp as a separate field so we can compare against the delete cutoff.
+async function saveWithClientTimestamp(text, type, time, dateHeader) {
+    try {
+        await addDoc(collection(db, COLLECTION), {
+            text,
+            type,
+            time,
+            dateHeader: dateHeader || null,
+            createdAt:  serverTimestamp(),
+            clientMs:   Date.now()        // ← used for cutoff comparison
         });
     } catch (err) {
         console.error("Failed to save message:", err);
@@ -58,30 +89,29 @@ async function wipeFirestore() {
 }
 
 // ─── REAL-TIME LISTENER ───────────────────────────────────────────────────────
-// onSnapshot fires immediately with existing data AND again whenever any device
-// adds/removes a message — this is what gives you cross-device sync.
 
 function startRealtimeSync() {
     const q = query(collection(db, COLLECTION), orderBy("createdAt", "asc"));
 
     onSnapshot(q, (snapshot) => {
-        // Re-read from localStorage on every snapshot so refresh cannot bypass the flag
-        mainIsHidden = localStorage.getItem('main_chat_hidden') === 'true';
+        const cutoff = getDeleteCutoff(); // read fresh every time
 
-        // Clear both containers and re-render fresh from Firestore
         chatBoxMain.innerHTML    = '';
         chatBoxHistory.innerHTML = '';
 
         snapshot.forEach(docSnap => {
             const msg = docSnap.data();
+
+            // History overlay always gets every message
             renderToContainer(chatBoxHistory, msg.text, msg.type, msg.time, msg.dateHeader);
-            if (!mainIsHidden) {
+
+            // Main view skips anything older than the delete cutoff
+            const msgTime = msg.clientMs || 0;
+            if (msgTime > cutoff) {
                 renderToContainer(chatBoxMain, msg.text, msg.type, msg.time, msg.dateHeader);
             }
         });
 
-        // Always show the greeting on top (never saved to Firestore)
-        // It sits above the synced history visually but isn't stored
         prependGreeting();
     });
 }
@@ -105,35 +135,29 @@ function addMessage(text, type, shouldSave = true) {
     const timeStr = now.format('h:mm A');
     const dateStr = now.format('dddd, MMMM D, YYYY');
 
-    // Check last date divider in history box to decide if we need a new header
     const dividers  = chatBoxHistory.querySelectorAll('.date-divider');
     const lastText  = dividers.length > 0 ? dividers[dividers.length - 1].innerText : "";
     const dateHeader = lastText.trim() !== dateStr ? dateStr : null;
 
-    // Render immediately to both UIs (optimistic update — feels instant)
     renderToContainer(chatBoxMain, text, type, timeStr, dateHeader);
     renderToContainer(chatBoxHistory, text, type, timeStr, dateHeader);
 
     if (shouldSave) {
-        // Save to Firestore → onSnapshot on other devices will pick this up
-        saveToFirestore(text, type, timeStr, dateHeader);
-        // If user sends a new message, unhide the main view
-        mainIsHidden = false;
-        localStorage.removeItem('main_chat_hidden');
+        saveWithClientTimestamp(text, type, timeStr, dateHeader);
     }
 }
 
 function renderToContainer(container, text, type, time, dateHeader) {
     if (dateHeader && dateHeader.trim() !== "") {
-        const divider       = document.createElement('div');
-        divider.className   = 'date-divider';
-        divider.innerText   = dateHeader;
+        const divider     = document.createElement('div');
+        divider.className = 'date-divider';
+        divider.innerText = dateHeader;
         container.appendChild(divider);
     }
 
-    const msgDiv       = document.createElement('div');
-    msgDiv.className   = `message ${type}`;
-    msgDiv.innerHTML   = `
+    const msgDiv     = document.createElement('div');
+    msgDiv.className = `message ${type}`;
+    msgDiv.innerHTML = `
         <div class="text-content">${text}</div>
         <div style="font-size:10px;opacity:0.7;margin-top:4px;text-align:right;">${time}</div>
     `;
@@ -143,24 +167,24 @@ function renderToContainer(container, text, type, time, dateHeader) {
 
 // ─── EVENTS ───────────────────────────────────────────────────────────────────
 
-// Delete Button — hides main view permanently across refreshes.
-// History overlay (Ctrl+M) still shows everything. Only Ctrl+Alt+R wipes Firestore.
+// Delete Button — stamps the current time as the cutoff.
+// All messages before this moment are hidden from main view permanently.
+// New messages sent after this point will appear normally.
+// Ctrl+M history overlay is unaffected — it always shows everything.
 deleteBtn.addEventListener('click', () => {
-    mainIsHidden = true;
-    localStorage.setItem('main_chat_hidden', 'true');
+    setDeleteCutoff(Date.now());
     chatBoxMain.innerHTML = '';
-    prependGreeting(); // keep the greeting visible so the page isn't blank
+    prependGreeting();
 });
 
-// Ctrl + Alt + R — FULL wipe from Firestore (all devices lose history)
+// Ctrl + Alt + R — full wipe of Firestore AND the delete cutoff
 document.addEventListener('keydown', async (e) => {
     if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r') {
         e.preventDefault();
-        mainIsHidden = false;
-        localStorage.removeItem('main_chat_hidden');
+        clearDeleteCutoff();
         chatBoxMain.innerHTML    = '';
         chatBoxHistory.innerHTML = '';
-        await wipeFirestore();  // deletes from cloud → onSnapshot clears other devices too
+        await wipeFirestore();
     }
 });
 
@@ -191,5 +215,4 @@ hiddenHistory.addEventListener('click', (e) => {
 });
 
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
-// Start listening to Firestore — this loads history AND keeps all devices in sync
 startRealtimeSync();
