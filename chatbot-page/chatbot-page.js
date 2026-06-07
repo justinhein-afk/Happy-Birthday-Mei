@@ -27,8 +27,9 @@ const deleteBtn      = document.querySelector('.delete-button');
 const hiddenHistory  = document.querySelector('.history-overlay');
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-// Track whether the user has soft-deleted the main view this session
-let mainIsHidden = sessionStorage.getItem('main_chat_hidden') === 'true';
+// localStorage keeps the hidden flag alive across refreshes.
+// Only Ctrl+Alt+R (full wipe) or sending a new message clears it.
+let mainIsHidden = localStorage.getItem('main_chat_hidden') === 'true';
 
 // ─── FIRESTORE HELPERS ────────────────────────────────────────────────────────
 
@@ -64,6 +65,9 @@ function startRealtimeSync() {
     const q = query(collection(db, COLLECTION), orderBy("createdAt", "asc"));
 
     onSnapshot(q, (snapshot) => {
+        // Re-read from localStorage on every snapshot so refresh cannot bypass the flag
+        mainIsHidden = localStorage.getItem('main_chat_hidden') === 'true';
+
         // Clear both containers and re-render fresh from Firestore
         chatBoxMain.innerHTML    = '';
         chatBoxHistory.innerHTML = '';
@@ -115,7 +119,7 @@ function addMessage(text, type, shouldSave = true) {
         saveToFirestore(text, type, timeStr, dateHeader);
         // If user sends a new message, unhide the main view
         mainIsHidden = false;
-        sessionStorage.removeItem('main_chat_hidden');
+        localStorage.removeItem('main_chat_hidden');
     }
 }
 
@@ -139,22 +143,23 @@ function renderToContainer(container, text, type, time, dateHeader) {
 
 // ─── EVENTS ───────────────────────────────────────────────────────────────────
 
-// Delete Button — soft hide main view only (history overlay still shows everything)
+// Delete Button — hides main view permanently across refreshes.
+// History overlay (Ctrl+M) still shows everything. Only Ctrl+Alt+R wipes Firestore.
 deleteBtn.addEventListener('click', () => {
-    chatBoxMain.innerHTML = '';
     mainIsHidden = true;
-    sessionStorage.setItem('main_chat_hidden', 'true');
-    addMessage("Chat history deleted. Ready for your next question!", "bot-msg", false);
+    localStorage.setItem('main_chat_hidden', 'true');
+    chatBoxMain.innerHTML = '';
+    prependGreeting(); // keep the greeting visible so the page isn't blank
 });
 
 // Ctrl + Alt + R — FULL wipe from Firestore (all devices lose history)
 document.addEventListener('keydown', async (e) => {
     if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r') {
         e.preventDefault();
+        mainIsHidden = false;
+        localStorage.removeItem('main_chat_hidden');
         chatBoxMain.innerHTML    = '';
         chatBoxHistory.innerHTML = '';
-        mainIsHidden = false;
-        sessionStorage.removeItem('main_chat_hidden');
         await wipeFirestore();  // deletes from cloud → onSnapshot clears other devices too
     }
 });
